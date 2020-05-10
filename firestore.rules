@@ -3,7 +3,15 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isUser();
       allow create: if request.auth.uid == userId 
-       && request.resource.data.createdAt == request.time;
+       && isValidUser(request.resource.data);
+
+      function isValidUser(data) {
+        return data.keys().hasOnly([
+            "birthday", 
+            "createdAt",
+          ]) && 
+          request.resource.data.createdAt == request.time
+      }
     }
     match /items/{itemId} {
       // Only the item owner can see the item
@@ -19,20 +27,20 @@ service cloud.firestore {
         && notUpdating('createdAt');
       // Only the item owner is allowed to delete it.
       allow delete: if isOwner();
-    }
 
-    function isValidItem(data) {
-      return data.keys().hasOnly([
-          "owner", 
-          "topic", 
-          "createdAt",
-          "modifiedAt"
-        ]) && 
-        data.owner.size() > 0 && 
-        data.owner.size() <= 50 && 
-        data.topic.size() > 0 &&
-        data.topic.size() <= 50 &&
-        data.modifiedAt == request.time
+      function isValidItem(data) {
+        return data.keys().hasOnly([
+            "owner", 
+            "topic", 
+            "createdAt",
+            "modifiedAt"
+          ]) && 
+          data.owner.size() > 0 && 
+          data.owner.size() <= 50 && 
+          data.topic.size() > 0 &&
+          data.topic.size() <= 50 &&
+          data.modifiedAt == request.time
+      }
     }
   }
 
