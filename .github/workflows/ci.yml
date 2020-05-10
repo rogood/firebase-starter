@@ -19,6 +19,6 @@ jobs:
     - run: npm install
     - uses: w9jds/firebase-action@master
       with:
-        args: deploy --only firestore
+        args: deploy --only firestore --project ${{ secrets.FIREBASE_PROJECT }}
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
