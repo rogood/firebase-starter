@@ -1,8 +1,9 @@
-name: CI
+name: CI_PR
 
 on:
-  push:
+  pull_request:
     branches:
+    - develop
     - master
     - release/*
 
@@ -16,8 +17,8 @@ jobs:
     - uses: actions/setup-node@master
       with:
         node-version: '10.x'
-    - uses: w9jds/firebase-action@master
-      with:
-        args: deploy --only firestore --project ${{ secrets.FIREBASE_PROJECT }}
+    - run: npm install
+    - run: npm install -g firebase-tools
+    - run: npm test
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
