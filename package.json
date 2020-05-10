@@ -6,8 +6,7 @@
     "format": "prettier --write **/*.ts",
     "pretest": "tsc",
     "test": "firebase emulators:exec --only firestore 'mocha --timeout=10000'",
-    "deploy": "firebase deploy --token $(grep FIREBASE_TOKEN .env | cut -d '=' -f2) --project $(grep FIREBASE_PROJECT .env | cut -d '=' -f2)",
-    "deploy:ci": "firebase deploy --token $FIREBASE_TOKEN --project $FIREBASE_PROJECT"
+    "deploy": "firebase deploy --token $(grep FIREBASE_TOKEN .env | cut -d '=' -f2) --project $(grep FIREBASE_PROJECT .env | cut -d '=' -f2)"
   },
   "devDependencies": {
     "@firebase/testing": "^0.18.2",
