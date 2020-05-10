@@ -1,0 +1,51 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if isUser();
+      allow create: if request.auth.uid == userId 
+       && request.resource.data.createdAt == request.time;
+    }
+    match /items/{itemId} {
+      // Only the item owner can see the item
+      allow read: if isOwner();
+      // If you create a item, you must set yourself as the owner.
+      allow create: if isUser()
+        && isValidItem(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      // Only the item owner is allowed to modify it.
+      allow update: if isOwner() && isValidItem(request.resource.data)
+        && isValidItem(request.resource.data)
+        && notUpdating('owner')
+        && notUpdating('createdAt');
+      // Only the item owner is allowed to delete it.
+      allow delete: if isOwner();
+    }
+
+    function isValidItem(data) {
+      return data.keys().hasOnly([
+          "owner", 
+          "topic", 
+          "createdAt",
+          "modifiedAt"
+        ]) && 
+        data.owner.size() > 0 && 
+        data.owner.size() <= 50 && 
+        data.topic.size() > 0 &&
+        data.topic.size() <= 50 &&
+        data.modifiedAt == request.time
+    }
+  }
+
+  function isUser() {
+    return request.resource.data.owner == request.auth.uid;
+  }
+
+  function isOwner() {
+    return resource.data.owner == request.auth.uid;
+  }
+
+  function notUpdating(field) {
+    return !(field in request.resource.data)
+      || resource.data[field] == request.resource.data[field]
+  }
+}
