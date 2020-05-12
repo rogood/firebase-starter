@@ -47,17 +47,18 @@ class UserProfiles {
   async "require users to log in before creating a profile"() {
     const db = authedApp(null);
     const profile = db.collection("users").doc("alice");
-    await firebase.assertFails(profile.set({ birthday: "January 1" }));
+    await firebase.assertFails(profile.set({ fullName: "Alice Aliceton" }));
   }
 
   @test
   async "should enforce the createdAt date in user profiles"() {
     const db = authedApp({ uid: "alice" });
     const profile = db.collection("users").doc("alice");
-    await firebase.assertFails(profile.set({ birthday: "January 1" }));
+    await firebase.assertFails(profile.set({ fullName: "Alice Aliceton" }));
     await firebase.assertSucceeds(
       profile.set({
-        birthday: "January 1",
+        fullName: "Alice Aliceton",
+        email: "alice@example.com",
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       })
     );
@@ -71,7 +72,8 @@ class UserProfiles {
         .collection("users")
         .doc("alice")
         .set({
-          birthday: "January 1",
+          fullName: "Alice Aliceton",
+          email: "alice@example.com",
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         })
     );
@@ -80,7 +82,8 @@ class UserProfiles {
         .collection("users")
         .doc("bob")
         .set({
-          birthday: "January 1",
+          fullName: "Bob Bobbins",
+          email: "bob@example.com",
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         })
     );
